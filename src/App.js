@@ -9,11 +9,9 @@ React.Component.prototype.$api = api;
 
 function App() {
   return (
-    <div className="App">
-      <Router>
-        <Switch>{renderRoutes(routes)}</Switch>
-      </Router>
-    </div>
+    <Router>
+      <Switch>{renderRoutes(routes)}</Switch>
+    </Router>
   );
 }
 

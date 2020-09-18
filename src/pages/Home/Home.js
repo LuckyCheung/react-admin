@@ -3,12 +3,6 @@ import "./Home.scss";
 import { renderRoutes } from "react-router-config";
 import { Link } from "react-router-dom";
 import { Layout, Menu, Breadcrumb, Typography } from "antd";
-import {
-  PieChartOutlined,
-  FileOutlined,
-  TeamOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -19,6 +13,7 @@ class Home extends React.Component {
     super();
     this.state = {
       collapsed: false,
+      breadcrumb: [],
     };
   }
 
@@ -27,11 +22,17 @@ class Home extends React.Component {
   };
 
   onClick = (e) => {
-    console.log(e.key, 6666);
+    let breadcrumb = e.key.split("/");
+    breadcrumb = breadcrumb.filter((item) => {
+      return item;
+    });
+    this.setState({
+      breadcrumb,
+    });
   };
 
   render() {
-    const { routes } = this.props.route;
+    const { children, navs } = this.props.route;
     return (
       <Layout style={{ minHeight: "100vh" }}>
         <Sider
@@ -42,43 +43,44 @@ class Home extends React.Component {
           <div className="logo" />
           <Menu
             theme="dark"
-            defaultSelectedKeys={["1"]}
+            defaultSelectedKeys={["/Home/User"]}
             mode="inline"
             onClick={this.onClick}
           >
-            {routes.map((item) => {
-              return item.path !== "*" ? (
-                <Menu.Item key={item.path} icon={<PieChartOutlined />}>
-                  <Link to={item.path}> {item.describe.name}</Link>
-                </Menu.Item>
-              ) : null;
+            {navs.map((item) => {
+              return (
+                <SubMenu key={item.group} icon={item.icon} title={item.title}>
+                  {item.children.map((i) => {
+                    return (
+                      <Menu.Item key={i.path} icon={i.meta.icon}>
+                        <Link to={i.path}>{i.name}</Link>
+                      </Menu.Item>
+                    );
+                  })}
+                </SubMenu>
+              );
             })}
-            <SubMenu key="sub1" icon={<UserOutlined />} title="User">
-              <Menu.Item key="3">Tom</Menu.Item>
-              <Menu.Item key="4">Bill</Menu.Item>
-              <Menu.Item key="5">Alex</Menu.Item>
-            </SubMenu>
-            <SubMenu key="sub2" icon={<TeamOutlined />} title="Team">
-              <Menu.Item key="6">Team 1</Menu.Item>
-              <Menu.Item key="8">Team 2</Menu.Item>
-            </SubMenu>
-            <Menu.Item key="9" icon={<FileOutlined />} />
           </Menu>
         </Sider>
+
         <Layout className="site-layout">
-          <Header className="site-layout-background" style={{ padding: 0 }}>
+          <Header
+            className="site-layout-background"
+            style={{ padding: 0, textAlign: "center" }}
+          >
             <Title>后台管理</Title>
           </Header>
           <Content style={{ margin: "0 16px" }}>
             <Breadcrumb style={{ margin: "16px 0" }}>
-              <Breadcrumb.Item>User</Breadcrumb.Item>
-              <Breadcrumb.Item>Bill</Breadcrumb.Item>
+              {this.state.breadcrumb.map((item) => {
+                return <Breadcrumb.Item key={item}>{item}</Breadcrumb.Item>;
+              })}
             </Breadcrumb>
             <div
               className="site-layout-background"
               style={{ padding: 24, minHeight: 500 }}
             >
-              {renderRoutes(routes)}
+              {renderRoutes(children)}
             </div>
           </Content>
           <Footer style={{ textAlign: "center" }}>
